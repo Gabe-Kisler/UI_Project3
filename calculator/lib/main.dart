@@ -74,18 +74,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeNotifier,
-      builder: (context, currentMode, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Calculator',
-          theme: getTheme(Brightness.light),
-          darkTheme: getTheme(Brightness.dark),
-          themeMode: currentMode,
-          home: const MainTextField(title: 'Calculator'),
-        );
-      },
+    return MaterialApp(
+      title: 'Calculator',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 5, 5, 5)),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        brightness: Brightness.light,
+      ),
+
+      darkTheme: ThemeData (
+        scaffoldBackgroundColor: const Color.fromARGB(255, 27, 27, 27),
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 105, 91, 255),
+          brightness: Brightness.dark,
+        ),
+      ),
+
+      themeMode: ThemeMode.dark,
+      home: const MainTextField(title: 'Calculator'),
     );
   }
 }
@@ -278,47 +285,130 @@ class _MainTextFieldState extends State<MainTextField> {
           ),
         ],
       ),
-      body: Container(
-        color: darkMode ? AppColors.dark2 : AppColors.sand,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: darkMode
-                      ? AppColors.cream.withOpacity(0.10)
-                      : const Color(0xFFF7F1DD),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: darkMode ? AppColors.cream : AppColors.red,
-                    width: 2,
-                  ),
+
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(history, style: TextStyle(fontSize: 22)),
+            Container (
+              width: double.infinity,
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration (
+                color: const Color.fromARGB(221, 54, 54, 54),
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: Text (
+                text,
+                style: TextStyle (
+                  fontSize: 32,
+                  color: const Color.fromARGB(255, 121, 121, 121),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      history,
+              ),
+            ),
+            Row (
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding (
+                  padding: EdgeInsets.all(6.0),
+                  child: ElevatedButton (
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 53, 55, 82),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        text = '';
+                        history = '';
+                        num1 = 0;
+                        operation = '';
+                      });
+                    },
+                    child: Text(
+                      'C', 
                       style: TextStyle(
-                        fontSize: 22,
-                        color: darkMode ? AppColors.cream : AppColors.blue,
+                        fontSize: 24,
+                        color: const Color.fromARGB(255, 22, 22, 22),
+                      ),
+                        ),
+                  )
+                ),
+                Padding (
+                  padding: EdgeInsets.all(6.0),
+                  child: ElevatedButton (
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 53, 55, 82),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (text.isNotEmpty) {
+                          text = text.substring(0, text.length - 1);
+                        }
+                      });
+                    },
+                    child: Text(
+                      '<', 
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: const Color.fromARGB(255, 22, 22, 22),
+                      ),
+                        ),
+                  )
+                ),
+              ]
+            ),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 4,
+                children: [
+                  for (var button in [
+                    '7',
+                    '8',
+                    '9',
+                    '/',
+                    '4',
+                    '5',
+                    '6',
+                    '*',
+                    '1',
+                    '2',
+                    '3',
+                    '-',
+                    '0',
+                    '.',
+                    '=',
+                    '+',
+                  ])
+                    Padding(
+                      padding: EdgeInsets.all(6.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: (button == '/' || button == '*' || button == '-' || button == '+' || button == '=') 
+                              ? const Color.fromARGB(255, 43, 44, 54) 
+                              : const Color.fromARGB(255, 39, 39, 39),
+                        ),
+                        onPressed: () {
+                          if (button == '=') {
+                            calculate();
+                            return;
+                          }
+                          else if (button == '+' || button =='-' || button =='*' || button =='/') {
+                            setOperation(button);
+                          } 
+                          else {
+                            setMainTextField(button);
+                          }
+                        },
+
+                        child: Text(
+                          button, 
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: const Color.fromARGB(255, 22, 22, 22), 
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      text.isEmpty ? '0' : text,
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: darkMode ? AppColors.cream : AppColors.richBlack,
-                      ),
                     ),
-                  ],
-                ),
+                ],
               ),
               const SizedBox(height: 20),
               Expanded(
