@@ -11,7 +11,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Calculator',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 5, 5, 5)),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        brightness: Brightness.light,
+      ),
+
+      darkTheme: ThemeData (
+        scaffoldBackgroundColor: const Color.fromARGB(255, 27, 27, 27),
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 105, 91, 255),
+          brightness: Brightness.dark,
+        ),
+      ),
+
+      themeMode: ThemeMode.dark,
       home: const MainTextField(title: 'Calculator'),
     );
   }
@@ -89,12 +104,77 @@ class _MainTextFieldState extends State<MainTextField> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
+
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(history, style: TextStyle(fontSize: 22)),
-            Text(text, style: TextStyle(fontSize: 32)),
+            Container (
+              width: double.infinity,
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration (
+                color: const Color.fromARGB(221, 54, 54, 54),
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: Text (
+                text,
+                style: TextStyle (
+                  fontSize: 32,
+                  color: const Color.fromARGB(255, 121, 121, 121),
+                ),
+              ),
+            ),
+            Row (
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding (
+                  padding: EdgeInsets.all(6.0),
+                  child: ElevatedButton (
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 53, 55, 82),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        text = '';
+                        history = '';
+                        num1 = 0;
+                        operation = '';
+                      });
+                    },
+                    child: Text(
+                      'C', 
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: const Color.fromARGB(255, 22, 22, 22),
+                      ),
+                        ),
+                  )
+                ),
+                Padding (
+                  padding: EdgeInsets.all(6.0),
+                  child: ElevatedButton (
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 53, 55, 82),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (text.isNotEmpty) {
+                          text = text.substring(0, text.length - 1);
+                        }
+                      });
+                    },
+                    child: Text(
+                      '<', 
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: const Color.fromARGB(255, 22, 22, 22),
+                      ),
+                        ),
+                  )
+                ),
+              ]
+            ),
             Expanded(
               child: GridView.count(
                 crossAxisCount: 4,
@@ -120,6 +200,11 @@ class _MainTextFieldState extends State<MainTextField> {
                     Padding(
                       padding: EdgeInsets.all(6.0),
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: (button == '/' || button == '*' || button == '-' || button == '+' || button == '=') 
+                              ? const Color.fromARGB(255, 43, 44, 54) 
+                              : const Color.fromARGB(255, 39, 39, 39),
+                        ),
                         onPressed: () {
                           if (button == '=') {
                             calculate();
@@ -132,8 +217,15 @@ class _MainTextFieldState extends State<MainTextField> {
                             setMainTextField(button);
                           }
                         },
-                        child: Text(button, style: TextStyle(fontSize: 24)),
+
+                        child: Text(
+                          button, 
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: const Color.fromARGB(255, 22, 22, 22), 
+                        ),
                       ),
+                    ),
                     ),
                 ],
               ),
